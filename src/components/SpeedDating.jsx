@@ -1,13 +1,12 @@
 "use client";
 import { useState, useMemo } from "react";
-
+ 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 // lin | pod (app) | subteam
 // null = no constraint for that field (leads, team leads)
-
+ 
 const PEOPLE = [
   // Baddies Lin
-  { name: "Leah",         lin: "Baddies",          pod: "Chimes",  subteam: "Design"     },
   { name: "Selena",       lin: "Baddies",          pod: "Uplift",  subteam: "Design"     },
   { name: "Kaylee",       lin: "Baddies",          pod: "Resell",  subteam: "iOS"        },
   // American Dream Lin
@@ -23,7 +22,6 @@ const PEOPLE = [
   { name: "Carolyn",      lin: "Manifest Destiny", pod: "Eatery",  subteam: "Marketing"  },
   { name: "Alyssa",       lin: "Manifest Destiny", pod: "Resell",  subteam: "iOS"        },
   // Brainrotters Lin
-  { name: "Emil",         lin: "Brainrotters",     pod: "Score",   subteam: "Android"    },
   { name: "Rohan",        lin: "Brainrotters",     pod: "Chimes",  subteam: "Marketing"  },
   { name: "Wendy",        lin: "Brainrotters",     pod: "Uplift",  subteam: "Marketing"  },
   // Nicole & Josh's Combined Lin
@@ -66,7 +64,6 @@ const PEOPLE = [
   { name: "Asen",         lin: "Goondev",          pod: "Navi",    subteam: "iOS"        },
   { name: "Zain",         lin: "Goondev",          pod: "Score",   subteam: "iOS"        },
   { name: "Chris",        lin: "Goondev",          pod: "Eatery",  subteam: "Backend"    },
-  { name: "Gabriel",      lin: "Goondev",          pod: "Navi",    subteam: "iOS"        },
   // Anvi's Lin
   { name: "Christine",    lin: "Anvi's Lin",       pod: null,      subteam: "Marketing"  }, // Marketing Lead
   { name: "Sylvia",       lin: "Anvi's Lin",       pod: "Chimes",  subteam: "Design"     },
@@ -78,19 +75,17 @@ const PEOPLE = [
   { name: "Enzo",         lin: "Munch Bunch",      pod: "Uplift",  subteam: "Marketing"  },
   { name: "Anatoli",      lin: "Munch Bunch",      pod: "Uplift",  subteam: "iOS"        },
   { name: "Wyatt",        lin: "Munch Bunch",      pod: "Navi",    subteam: "Backend"    },
-  { name: "Chimdi",       lin: "Munch Bunch",      pod: "Uplift",  subteam: "Backend"    },
   { name: "Fanhao",       lin: "Munch Bunch",      pod: "Eatery",  subteam: "Backend"    },
   { name: "Danny",        lin: "Munch Bunch",      pod: "Resell",  subteam: "Android"    },
   { name: "Andrew Pung",  lin: "Munch Bunch",      pod: "Score",   subteam: "Backend"    },
   // Not found in lin list (appears in pod chart only)
-  { name: "Parker",       lin: null,               pod: "Resell",  subteam: "Marketing"  },
   { name: "Sophie",       lin: null,               pod: "Uplift",  subteam: "Backend"    },
   { name: "Gregor",       lin: null,               pod: "Chimes",  subteam: "Android"    },
   // Team Lead (you!)
 ];
-
+ 
 const PEOPLE_MAP = Object.fromEntries(PEOPLE.map(p => [p.name, p]));
-
+ 
 const LIN_COLORS = {
   "Baddies":          "#FF8FAB",
   "American Dream":   "#FFD166",
@@ -106,7 +101,7 @@ const LIN_COLORS = {
   "Anvi's Lin":       "#F6BD60",
   "Munch Bunch":      "#90BE6D",
 };
-
+ 
 const SUBTEAM_META = {
   Android:   { color: "#2ECC71", emoji: "🤖" },
   Backend:   { color: "#3498DB", emoji: "⚙️" },
@@ -114,7 +109,7 @@ const SUBTEAM_META = {
   iOS:       { color: "#9B59B6", emoji: "🍎" },
   Marketing: { color: "#E74C3C", emoji: "📣" },
 };
-
+ 
 const POD_COLORS = {
   Eatery:  "#FF6B6B",
   Resell:  "#4ECDC4",
@@ -123,9 +118,9 @@ const POD_COLORS = {
   Uplift:  "#FFEAA7",
   Chimes:  "#DDA0DD",
 };
-
+ 
 // ─── LOGIC ───────────────────────────────────────────────────────────────────
-
+ 
 function canPair(a, b) {
   if (a.name === b.name) return false;
   if (a.lin    && b.lin    && a.lin    === b.lin)    return false;
@@ -133,7 +128,7 @@ function canPair(a, b) {
   if (a.subteam && b.subteam && a.subteam === b.subteam) return false;
   return true;
 }
-
+ 
 function computeSplit() {
   // Shuffle all people randomly, then assign alternately to stationary/transient
   // so we always get exactly floor(n/2) vs ceil(n/2) — no one sits out.
@@ -151,7 +146,7 @@ function computeSplit() {
   });
   return { stationary, transient };
 }
-
+ 
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -160,15 +155,15 @@ function shuffle(arr) {
   }
   return a;
 }
-
+ 
 function computeRounds(stationary, transient) {
   const metPairs = new Set();
   const rounds   = [];
-
+ 
   function pairKey(a, b) {
     return a < b ? `${a}|||${b}` : `${b}|||${a}`;
   }
-
+ 
   function runMatching(shuffledStat, shuffledTrans) {
     const curMatch = {};
     function augment(tpName, seen) {
@@ -188,7 +183,7 @@ function computeRounds(stationary, transient) {
     for (const tp of shuffledTrans) augment(tp.name, new Set());
     return curMatch;
   }
-
+ 
   for (let r = 0; r < 60; r++) {
     // Run 8 attempts with different shuffles, keep the best (most pairs)
     let bestMatch = {};
@@ -198,7 +193,7 @@ function computeRounds(stationary, transient) {
         bestMatch = candidate;
       }
     }
-
+ 
     const pairs = [];
     for (const [spName, tpName] of Object.entries(bestMatch)) {
       metPairs.add(pairKey(tpName, spName));
@@ -209,9 +204,9 @@ function computeRounds(stationary, transient) {
   }
   return rounds;
 }
-
+ 
 // ─── SUB-COMPONENTS ──────────────────────────────────────────────────────────
-
+ 
 function Tag({ name, style = {} }) {
   const p = PEOPLE_MAP[name];
   const bg     = p?.lin    ? LIN_COLORS[p.lin]                        : "#E8E8E8";
@@ -233,7 +228,7 @@ function Tag({ name, style = {} }) {
     </span>
   );
 }
-
+ 
 function PairRow({ t, s }) {
   const tp = PEOPLE_MAP[t];
   const sp = PEOPLE_MAP[s];
@@ -261,28 +256,28 @@ function PairRow({ t, s }) {
     </div>
   );
 }
-
+ 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
-
+ 
 export default function AppDevSpeedDating() {
   const { stationary, transient } = useMemo(computeSplit, []);
   const rounds = useMemo(() => computeRounds(stationary, transient), [stationary, transient]);
-
+ 
   const [tab,        setTab]        = useState("groups");
   const [numRounds,  setNumRounds]  = useState(Math.min(10, rounds.length));
   const [searchName, setSearchName] = useState("");
-
+ 
   const selectedPerson = useMemo(() => {
     const q = searchName.toLowerCase().trim();
     if (q.length < 2) return null;
     return PEOPLE.find(p => p.name.toLowerCase().includes(q)) ?? null;
   }, [searchName]);
-
+ 
   const isStationary = useMemo(
     () => selectedPerson ? stationary.some(s => s.name === selectedPerson.name) : null,
     [selectedPerson, stationary]
   );
-
+ 
   const personSched = useMemo(() => {
     if (!selectedPerson) return [];
     return rounds.slice(0, numRounds).map((round, i) => {
@@ -295,15 +290,15 @@ export default function AppDevSpeedDating() {
       };
     });
   }, [selectedPerson, isStationary, rounds, numRounds]);
-
+ 
   const TABS = [
     { id: "groups",   label: "👥 Groups"      },
     { id: "rounds",   label: "🔄 All Rounds"  },
     { id: "me",       label: "🔍 My Schedule" },
   ];
-
+ 
   const stationarySet = useMemo(() => new Set(stationary.map(s => s.name)), [stationary]);
-
+ 
   return (
     <div style={{
       fontFamily: "'DM Sans', 'Trebuchet MS', sans-serif",
@@ -346,7 +341,7 @@ export default function AppDevSpeedDating() {
           <span style={{ color: "#90BE6D" }}>subteam</span>.
         </div>
       </div>
-
+ 
       {/* ── Tab bar ── */}
       <div style={{
         background: "#1a1a2e",
@@ -377,9 +372,9 @@ export default function AppDevSpeedDating() {
           </button>
         ))}
       </div>
-
+ 
       <div style={{ padding: "24px 28px" }}>
-
+ 
         {/* ══ GROUPS TAB ══ */}
         {tab === "groups" && (
           <div>
@@ -405,7 +400,7 @@ export default function AppDevSpeedDating() {
                 </div>
               ))}
             </div>
-
+ 
             {/* Legend */}
             <div style={{ background: "white", borderRadius: 14, padding: 20, border: "1.5px solid #eee" }}>
               <div style={{ fontWeight: 800, fontSize: 14, marginBottom: 14, letterSpacing: "0.05em" }}>
@@ -448,7 +443,7 @@ export default function AppDevSpeedDating() {
             </div>
           </div>
         )}
-
+ 
         {/* ══ ROUNDS TAB ══ */}
         {tab === "rounds" && (
           <div>
@@ -491,7 +486,7 @@ export default function AppDevSpeedDating() {
                 ~{numRounds * 3}–{numRounds * 5} min at 3–5 min/round
               </div>
             </div>
-
+ 
             {rounds.slice(0, numRounds).map((round, i) => (
               <div key={i} style={{ marginBottom: 24 }}>
                 <div style={{
@@ -525,7 +520,7 @@ export default function AppDevSpeedDating() {
             ))}
           </div>
         )}
-
+ 
         {/* ══ MY SCHEDULE TAB ══ */}
         {tab === "me" && (
           <div>
@@ -570,7 +565,7 @@ export default function AppDevSpeedDating() {
                 <span style={{ fontWeight: 800, color: "#1a1a2e", minWidth: 28 }}>{numRounds}</span>
               </div>
             </div>
-
+ 
             {!selectedPerson && searchName.length < 2 && (
               <div style={{ textAlign: "center", padding: "60px 20px", color: "#aaa" }}>
                 <div style={{ fontSize: 56, marginBottom: 12 }}>🔍</div>
@@ -578,13 +573,13 @@ export default function AppDevSpeedDating() {
                 <div style={{ fontSize: 14, marginTop: 6 }}>to see your personalized speed dating schedule</div>
               </div>
             )}
-
+ 
             {!selectedPerson && searchName.length >= 2 && (
               <div style={{ textAlign: "center", padding: 40, color: "#aaa" }}>
                 No one found matching "{searchName}"
               </div>
             )}
-
+ 
             {selectedPerson && (
               <div>
                 {/* Person card */}
@@ -615,7 +610,7 @@ export default function AppDevSpeedDating() {
                     <span>Subteam: {selectedPerson.subteam || "N/A"}</span>
                   </div>
                 </div>
-
+ 
                 {/* Schedule list */}
                 <div style={{
                   background: "white", borderRadius: 14,
